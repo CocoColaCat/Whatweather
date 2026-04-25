@@ -309,58 +309,71 @@
     }, 100);
   }
 
-  function sendAIMessage() {
+
+const BACKEND_URL = 'https://whatweather-ai.onrender.com'; 
+
+async function sendAIMessage() {
     const input = document.getElementById('ai-input');
     const msg = input.value.trim();
-    if (!msg) return;
+    if (!msg || !currentWeatherData) return;
 
     const messagesDiv = document.getElementById('chat-messages');
     
+    // 顯示用戶訊息
     const userMsg = document.createElement('div');
     userMsg.className = 'flex justify-end';
-    userMsg.innerHTML = `
-      <div class="glass rounded-2xl p-3 max-w-xs bg-sky-600 bg-opacity-50">
-        <p class="text-sky-100 text-sm">${msg}</p>
-        <p class="text-sky-500 text-xs mt-1">${new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})}</p>
-      </div>
-    `;
+    userMsg.innerHTML = `<div class="glass rounded-2xl p-3 max-w-[80%] bg-sky-600 bg-opacity-50"><p class="text-sky-100 text-sm">${msg}</p></div>`;
     messagesDiv.appendChild(userMsg);
-
-    setTimeout(() => {
-      const aiMsg = document.createElement('div');
-      aiMsg.className = 'glass rounded-2xl p-3 max-w-xs bg-sky-900 bg-opacity-50';
-      
-      let response = '根據目前的天氣資料';
-      if (currentWeatherData) {
-        const temp = Math.round(currentWeatherData.current.temperature_2m);
-        const desc = currentWeatherData.current.weather_code;
-        
-        if (temp > 28) {
-          response += `，氣溫約為 ${temp}°，建議穿著輕薄透氣的短袖T恤、短褲或裙子，搭配輕便的涼鞋。記得準備太陽眼鏡和防曬霜！☀️`;
-        } else if (temp > 20) {
-          response += `，氣溫約為 ${temp}°，適合穿著短袖或短褲加上薄外套。如需要也可以考慮牛仔褲搭配輕薄上衣。🌤️`;
-        } else if (temp > 10) {
-          response += `，氣溫約為 ${temp}°，建議穿著長袖上衣搭配牛仔褲或長褲，可以考慮加上風衣或毛衣。🧥`;
-        } else {
-          response += `，氣溫約為 ${temp}°，建議穿著厚重衣物，包括羽絨服、毛衣和長褲。記得戴圍巾和手套保暖！❄️`;
-        }
-        
-        if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(desc)) {
-          response += ' 預計會下雨，記得帶傘！🌂';
-        }
-      }
-      
-      aiMsg.innerHTML = `
-        <p class="text-sky-200 text-sm">${response}</p>
-        <p class="text-sky-500 text-xs mt-1">${new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})}</p>
-      `;
-      messagesDiv.appendChild(aiMsg);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }, 500);
-
     input.value = '';
+
+    // 顯示載入中
+    const loadingMsg = document.createElement('div');
+    loadingMsg.className = 'glass rounded-2xl p-3 max-w-[80%] bg-sky-900 bg-opacity-50 animate-pulse';
+    loadingMsg.innerHTML = `<p class="text-sky-400 text-sm">Whatweather AI 正在回覆...</p>`;
+    messagesDiv.appendChild(loadingMsg);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }
+
+    try {
+        const c = currentWeatherData.current;
+        const d = currentWeatherData.daily;
+
+        // 整理給後端的數據
+        const payload = {
+            userMessage: msg,
+            weatherData: {
+                temp: Math.round(c.temperature_2m),
+                isRaining: [51, 53, 55, 61, 63, 65, 80, 81, 82].includes(c.weather_code) ? '是' : '否',
+                humidity: c.relative_humidity_2m,
+                windSpeed: c.wind_speed_10m,
+                pressure: Math.round(c.surface_pressure),
+                uv: Math.round(c.uv_index || 0),
+                aqi: '中', // 這裡可接入實際 AQI 邏輯
+                dewPoint: calculateDewPoint(c.temperature_2m, c.relative_humidity_2m),
+                forecast: d.temperature_2m_max.slice(0, 7).map((m, i) => `${i+1}天後:${m}°`).join(','),
+                precipitation: c.precipitation || 0
+            }
+        };
+
+        const response = await fetch(BACKEND_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        
+        messagesDiv.removeChild(loadingMsg);
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'glass rounded-2xl p-3 max-w-[80%] bg-sky-900 bg-opacity-50';
+        aiMsg.innerHTML = `<p class="text-sky-200 text-sm whitespace-pre-line">${data.reply}</p>`;
+        messagesDiv.appendChild(aiMsg);
+
+    } catch (error) {
+        messagesDiv.removeChild(loadingMsg);
+        console.error("後端連接失敗:", error);
+    }
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
 
   document.getElementById('ai-input')?.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendAIMessage();
