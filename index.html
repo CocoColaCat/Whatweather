@@ -360,13 +360,18 @@ async function sendAIMessage() {
             body: JSON.stringify(payload)
         });
 
-        const data = await response.json();
-        
-        messagesDiv.removeChild(loadingMsg);
-        const aiMsg = document.createElement('div');
-        aiMsg.className = 'glass rounded-2xl p-3 max-w-[80%] bg-sky-900 bg-opacity-50';
-        aiMsg.innerHTML = `<p class="text-sky-200 text-sm whitespace-pre-line">${data.reply}</p>`;
-        messagesDiv.appendChild(aiMsg);
+// ... 前略 fetch 代碼
+const data = await response.json();
+
+messagesDiv.removeChild(loadingMsg);
+const aiMsg = document.createElement('div');
+aiMsg.className = 'glass rounded-2xl p-3 max-w-[80%] bg-sky-900 bg-opacity-50';
+
+// 關鍵點：必須使用 data.reply，因為後端 index.js 是寫 res.json({ reply: text })
+const replyText = data.reply || data.error || "抱歉，發生未知錯誤";
+
+aiMsg.innerHTML = `<p class="text-sky-200 text-sm whitespace-pre-line">${replyText}</p>`;
+messagesDiv.appendChild(aiMsg);
 
     } catch (error) {
         messagesDiv.removeChild(loadingMsg);
