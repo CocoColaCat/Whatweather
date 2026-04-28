@@ -171,52 +171,62 @@
      </div><!-- Updated time -->
      <p id="updated-time" class="text-center text-sky-500 text-xs mt-6"></p>
     </div><!-- AI Chat Tab -->
-    <div id="ai-tab" class="tab-content hidden">
-  <div id="ai-privacy-overlay" class="fade-up glass rounded-2xl p-8 mb-6 flex flex-col items-center text-center hidden">
-    <div class="bg-sky-500/20 p-4 rounded-full mb-4">
-      <i data-lucide="shield-check" class="text-sky-400" style="width:32px;height:32px;"></i>
-    </div>
-    <h3 class="text-xl font-semibold text-white mb-2">用戶隱私確認</h3>
-    <p class="text-sky-200 text-sm mb-6 leading-relaxed">
-      為了提供更精準的天氣建議，<br>是否允許 AI 助手存取您的：<br>
-      <span class="text-sky-400 font-medium">【當前城市名稱：<span id="display-current-loc"></span>】</span>
-    </p>
-    <div class="flex gap-3 w-full">
-      <button onclick="setPrivacy(false)" class="flex-1 py-3 rounded-xl border border-sky-700 text-sky-300 hover:bg-sky-900/50 transition">拒絕</button>
-      <button onclick="setPrivacy(true)" class="flex-1 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-medium transition">同意分享</button>
-    </div>
-  </div>
-
-  <div id="ai-chat-container" class="glass rounded-2xl p-6 mb-6 h-96 flex flex-col hidden">
-    <h3 class="text-sky-300 font-medium mb-4 flex items-center gap-2"><i data-lucide="sparkles" style="width:18px;height:18px;"></i>天氣智能助手</h3>
-    <div id="chat-messages" class="flex-1 overflow-y-auto mb-4 space-y-4 pr-2 text-left">
-      <div class="glass rounded-2xl p-3 max-w-xs bg-sky-900 bg-opacity-50">
-        <p class="text-sky-200 text-sm">👋 你好！我是天氣助手，有什麼天氣問題我可以幫助你嗎？</p>
-        <p class="text-sky-500 text-xs mt-1">現在</p>
-      </div>
-    </div>
-    <div class="flex gap-2">
-      <input id="ai-input" type="text" placeholder="詢問天氣..." class="flex-1 bg-sky-950 border border-sky-700 rounded-full px-4 py-2.5 text-sky-100 placeholder-sky-600 focus:outline-none focus:border-sky-500 transition"> 
-      <button onclick="sendAIMessage()" class="px-4 py-2.5 bg-sky-600 hover:bg-sky-500 rounded-full transition">
-        <i data-lucide="send" style="width:18px;height:18px;"></i>
-      </button>
-    </div>
-  </div>
-</div>
-    </div><!-- Settings Tab -->
-    <div id="settings-tab" class="tab-content hidden">
-     <div class="fade-up fade-up-2 glass rounded-2xl p-6 mb-6">
-      <h3 class="text-sky-300 font-medium mb-4 flex items-center gap-2"><i data-lucide="map-pin" style="width:18px;height:18px;"></i>位置設定</h3>
-      <div class="space-y-3">
-       <div><label class="block text-sky-300 text-sm mb-2">輸入城市（英文）</label>
-        <div class="flex gap-2"><input id="location-input" type="text" placeholder="例如: Taipei, Tokyo" class="flex-1 bg-sky-950 border border-sky-700 rounded-lg px-4 py-2 text-sky-100 placeholder-sky-600 focus:outline-none focus:border-sky-500 transition"> <button onclick="searchLocation()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 rounded-lg transition">搜尋</button>
+<div id="ai-tab" class="tab-content hidden">
+      <div id="ai-privacy-overlay" class="fade-up glass rounded-2xl p-8 mb-6 flex flex-col items-center text-center">
+        <div class="bg-sky-500/20 p-4 rounded-full mb-4">
+          <i data-lucide="shield-check" class="text-sky-400" style="width:32px;height:32px;"></i>
         </div>
-       </div>
-       <div class="flex gap-2"><button onclick="useAutoLocation()" class="flex-1 px-4 py-2 bg-sky-700 hover:bg-sky-600 rounded-lg text-sm transition flex items-center justify-center gap-2"><i data-lucide="map" style="width:16px;height:16px;"></i>使用定位</button> <button onclick="resetToTaipei()" class="flex-1 px-4 py-2 bg-sky-500 hover:bg-sky-400 rounded-lg text-sm transition">回到台北</button>
-       </div>
+        <h3 class="text-xl font-semibold text-white mb-2">用戶隱私確認</h3>
+        <p class="text-sky-200 text-sm mb-6 leading-relaxed">
+          為了提供更精準的天氣建議（如當地穿搭），<br>是否允許 AI 助手存取您的：<br>
+          <span class="text-sky-400 font-medium">【當前城市名稱：<span id="display-current-loc">--</span>】</span>
+        </p>
+        <div class="flex gap-3 w-full">
+          <button onclick="setPrivacy(false)" class="flex-1 py-3 rounded-xl border border-sky-700 text-sky-300 hover:bg-sky-900/50 transition">拒絕</button>
+          <button onclick="setPrivacy(true)" class="flex-1 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-medium transition">同意分享</button>
+        </div>
       </div>
-     </div>
-     <p id="settings-status" class="text-center text-sky-400 text-sm"></p>
+
+      <div id="ai-chat-container" class="glass rounded-2xl p-6 mb-6 h-[500px] flex flex-col hidden">
+        <h3 class="text-sky-300 font-medium mb-4 flex items-center gap-2">
+          <i data-lucide="sparkles" style="width:18px;height:18px;"></i>天氣智能助手
+        </h3>
+        
+        <div id="chat-messages" class="flex-1 overflow-y-auto mb-4 space-y-4 pr-2 text-left">
+          <div class="glass rounded-2xl p-3 max-w-[80%] bg-sky-900 bg-opacity-50">
+            <p class="text-sky-200 text-sm">👋 你好！我是 Whatweather 智能助手。我已經準備好根據目前的即時天氣為您提供專業建議了！</p>
+            <p class="text-sky-500 text-xs mt-1">現在</p>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <input id="ai-input" type="text" onkeypress="if(event.key === 'Enter') sendAIMessage()" placeholder="詢問天氣或穿搭建議..." class="flex-1 bg-sky-950 border border-sky-700 rounded-full px-4 py-2.5 text-sky-100 placeholder-sky-600 focus:outline-none focus:border-sky-500 transition"> 
+          <button onclick="sendAIMessage()" class="px-4 py-2.5 bg-sky-600 hover:bg-sky-500 rounded-full transition shadow-lg shadow-sky-900/20">
+            <i data-lucide="send" style="width:18px;height:18px;"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="settings-tab" class="tab-content hidden">
+      <div class="fade-up fade-up-2 glass rounded-2xl p-6 mb-6">
+        <h3 class="text-sky-300 font-medium mb-4 flex items-center gap-2"><i data-lucide="map-pin" style="width:18px;height:18px;"></i>位置設定</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-sky-300 text-sm mb-2">輸入城市（英文）</label>
+            <div class="flex gap-2">
+              <input id="location-input" type="text" placeholder="例如: Taipei, Tokyo" class="flex-1 bg-sky-950 border border-sky-700 rounded-lg px-4 py-2 text-sky-100 placeholder-sky-600 focus:outline-none focus:border-sky-500 transition"> 
+              <button onclick="searchLocation()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 rounded-lg transition">搜尋</button>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="useAutoLocation()" class="flex-1 px-4 py-2 bg-sky-700 hover:bg-sky-600 rounded-lg text-sm transition flex items-center justify-center gap-2">
+              <i data-lucide="map" style="width:16px;height:16px;"></i>使用定位
+            </button> 
+            <button onclick="resetToTaipei()" class="flex-1 px-4 py-2 bg-sky-500 hover:bg-sky-400 rounded-lg text-sm transition">回到台北</button>
+          </div>
+        </div>
+      </div>
+      <p id="settings-status" class="text-center text-sky-400 text-sm"></p>
     </div>
    </div>
   </div>
