@@ -268,6 +268,11 @@
     }
   }
 
+  function setPrivacy(agreed) {
+    isLocationShared = agreed;
+    switchTab('ai');
+}
+
   function showLoadingScreen() {
     document.getElementById('loading-screen').classList.remove('hidden');
     document.getElementById('main-screen').classList.add('hidden');
